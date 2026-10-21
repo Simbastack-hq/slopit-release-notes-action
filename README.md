@@ -1,0 +1,53 @@
+# Publish release notes to SlopIt
+
+A GitHub Action that posts each release's notes to a [SlopIt](https://slopit.io) blog when the release is published. The notes go out exactly as you wrote them: no AI, no rewriting, no extra keys beyond the blog's own.
+
+Every release gets its own page with its own URL, title and date, plus an entry in the blog's RSS feed, sitemap, `llms.txt` and a markdown copy. That's the changelog SEO checklist, done for you.
+
+## Use it
+
+1. Get a SlopIt blog and its API key. The free plan is fine, and you can let your coding agent sign up for you: "Start a SlopIt blog for this repo's release notes. Instructions: https://slopit.io/slopit.SKILL.md".
+2. Add the key as a repository secret named `SLOPIT_API_KEY`.
+3. Add `.github/workflows/release-notes.yml`:
+
+```yaml
+name: Release notes to SlopIt
+on:
+  release:
+    types: [published]
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: Simbastack-hq/slopit-release-notes-action@v0
+        with:
+          api-key: ${{ secrets.SLOPIT_API_KEY }}
+```
+
+Publish a release, and the post appears on your blog a few seconds later.
+
+## Inputs
+
+| Input | Default | What it does |
+|---|---|---|
+| `api-key` | required | The blog's SlopIt API key. Keep it in a secret. |
+| `status` | `published` | `draft` saves the post privately instead, so you can check it first. |
+| `tags` | `release,changelog` | Comma-separated post tags. |
+| `title` | release name, else `<repo> <tag>` | Post title. |
+| `slug-prefix` | repo name | The post's slug is `<prefix>-<tag>`, e.g. `my-cli-v1-4-0`. |
+| `include-prereleases` | `false` | Also post prereleases. |
+| `update-existing` | `true` | A re-run or an edited release updates the same post instead of making a duplicate. |
+| `api-base` | `https://slopit.io/api` | Change it only for a self-hosted SlopIt. |
+
+Output: `post-url`, the published post's URL.
+
+## What it doesn't do
+
+- It doesn't write anything. If you want a "what this release means" post, have your agent write it as a separate post.
+- It skips draft releases. Prereleases are skipped too unless you turn them on.
+
+## Live demo
+
+This repo's own releases post to https://release-notes-demo.slopit.io.
+
+MIT licensed. Made by [SimbaStack](https://www.simbastack.com), the team behind SlopIt.

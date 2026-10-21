@@ -1,0 +1,50 @@
+name: Publish release notes to SlopIt
+description: Posts each GitHub release's notes, as written, to a SlopIt blog. No AI, no rewriting, one post per release.
+author: SimbaStack
+branding:
+  icon: book-open
+  color: orange
+inputs:
+  api-key:
+    description: The SlopIt blog's API key. Store it as a repository secret.
+    required: true
+  status:
+    description: '"published" (default) or "draft".'
+    default: published
+  tags:
+    description: Comma-separated post tags.
+    default: release,changelog
+  title:
+    description: Post title. Default is the release name, or "<repo> <tag>" when the release has no name.
+    default: ''
+  slug-prefix:
+    description: Slug prefix. Default is the repository name. The slug is "<prefix>-<tag>".
+    default: ''
+  include-prereleases:
+    description: Also post prereleases ("true"/"false").
+    default: 'false'
+  update-existing:
+    description: If a post for this release already exists (a re-run, or an edited release), update its title and body ("true"/"false").
+    default: 'true'
+  api-base:
+    description: SlopIt API base. Change it only for a self-hosted SlopIt.
+    default: https://slopit.io/api
+outputs:
+  post-url:
+    description: URL of the published post (empty for drafts and skipped releases).
+    value: ${{ steps.publish.outputs.post-url }}
+runs:
+  using: composite
+  steps:
+    - id: publish
+      shell: bash
+      env:
+        SLOPIT_API_KEY: ${{ inputs.api-key }}
+        INPUT_STATUS: ${{ inputs.status }}
+        INPUT_TAGS: ${{ inputs.tags }}
+        INPUT_TITLE: ${{ inputs.title }}
+        INPUT_SLUG_PREFIX: ${{ inputs.slug-prefix }}
+        INPUT_INCLUDE_PRERELEASES: ${{ inputs.include-prereleases }}
+        INPUT_UPDATE_EXISTING: ${{ inputs.update-existing }}
+        INPUT_API_BASE: ${{ inputs.api-base }}
+      run: bash "${{ github.action_path }}/publish.sh"

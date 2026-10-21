@@ -1,0 +1,15 @@
+# Dogfood: this repo's own releases go to https://release-notes-demo.slopit.io
+name: Release notes to SlopIt
+on:
+  release:
+    types: [published]
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - id: slopit
+        uses: ./
+        with:
+          api-key: ${{ secrets.SLOPIT_API_KEY }}
+      - run: echo "Post at ${{ steps.slopit.outputs.post-url }}"
