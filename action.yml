@@ -24,11 +24,17 @@ inputs:
     description: Also post prereleases ("true"/"false").
     default: 'false'
   update-existing:
-    description: If this release's post already exists (e.g. the release was edited and the workflow also triggers on `edited`), update its title and body ("true"/"false"). A re-run with unchanged notes returns the existing post.
+    description: If this release's post already exists, update its title and body ("true"/"false"). Use a manual run with `tag` after editing a release's notes. A re-run with unchanged notes returns the existing post.
     default: 'true'
   api-base:
     description: SlopIt API base. Change it only for a self-hosted SlopIt.
     default: https://slopit.io/api
+  tag:
+    description: For a manual run (workflow_dispatch), the release tag to (re)publish. Ignored on release events.
+    default: ''
+  github-token:
+    description: Token used to fetch the release on a manual run.
+    default: ${{ github.token }}
 outputs:
   post-url:
     description: URL of the published post (empty for drafts and skipped releases).
@@ -47,4 +53,6 @@ runs:
         INPUT_INCLUDE_PRERELEASES: ${{ inputs.include-prereleases }}
         INPUT_UPDATE_EXISTING: ${{ inputs.update-existing }}
         INPUT_API_BASE: ${{ inputs.api-base }}
+        INPUT_TAG: ${{ inputs.tag }}
+        GH_TOKEN: ${{ inputs.github-token }}
       run: bash "${{ github.action_path }}/publish.sh"

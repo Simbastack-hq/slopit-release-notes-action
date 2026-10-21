@@ -14,7 +14,12 @@ Every release gets its own page with its own URL, title and date, plus an entry 
 name: Release notes to SlopIt
 on:
   release:
-    types: [published, edited]
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Release tag to republish
+        required: true
 jobs:
   publish:
     runs-on: ubuntu-latest
@@ -22,9 +27,10 @@ jobs:
       - uses: Simbastack-hq/slopit-release-notes-action@v0
         with:
           api-key: ${{ secrets.SLOPIT_API_KEY }}
+          tag: ${{ inputs.tag }}
 ```
 
-Publish a release, and the post appears on your blog a few seconds later. Fix a typo in the release notes later, and the `edited` trigger updates the same post.
+Publish a release, and the post appears on your blog a few seconds later. Fixed a typo in the notes afterwards? Run the workflow manually (Actions → Release notes to SlopIt → Run workflow) with the tag, and the same post is updated.
 
 ## Inputs
 
@@ -36,7 +42,8 @@ Publish a release, and the post appears on your blog a few seconds later. Fix a 
 | `title` | release name, else `<repo> <tag>` | Post title. |
 | `slug-prefix` | repo name | The post's slug is `<prefix>-<tag>`, e.g. `my-cli-v1-4-0`. |
 | `include-prereleases` | `false` | Also post prereleases. |
-| `update-existing` | `true` | When the release's post already exists (you edited the release, with `edited` in the trigger types), update its title and body instead of skipping. A re-run with unchanged notes returns the existing post and changes nothing. |
+| `update-existing` | `true` | When the release's post already exists (a manual run after you edited the notes), update its title and body instead of skipping. A re-run with unchanged notes returns the existing post and changes nothing. |
+| `tag` | empty | For a manual run: the release tag to (re)publish. |
 | `api-base` | `https://slopit.io/api` | Change it only for a self-hosted SlopIt. |
 
 Output: `post-url`, the published post's URL.
