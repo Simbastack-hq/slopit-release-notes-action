@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # Publish one GitHub release's notes to a SlopIt blog, as written.
-# Reads the release from $GITHUB_EVENT_PATH (a `release` event: `published`,
-# or `edited` to update the post after the notes change).
+# Reads the release from $GITHUB_EVENT_PATH: a `release: published` event, or
+# a manual workflow_dispatch run with a `tag` input (to republish a release
+# after its notes were edited; `release: edited` never fired a run in testing).
 set -euo pipefail
 
 fail() { echo "::error::$*"; exit 1; }
