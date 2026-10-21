@@ -2,7 +2,7 @@
 name: Release notes to SlopIt
 on:
   release:
-    types: [published]
+    types: [published, edited]
 jobs:
   publish:
     runs-on: ubuntu-latest

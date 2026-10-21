@@ -14,7 +14,7 @@ Every release gets its own page with its own URL, title and date, plus an entry 
 name: Release notes to SlopIt
 on:
   release:
-    types: [published]
+    types: [published, edited]
 jobs:
   publish:
     runs-on: ubuntu-latest
@@ -24,7 +24,7 @@ jobs:
           api-key: ${{ secrets.SLOPIT_API_KEY }}
 ```
 
-Publish a release, and the post appears on your blog a few seconds later.
+Publish a release, and the post appears on your blog a few seconds later. Fix a typo in the release notes later, and the `edited` trigger updates the same post.
 
 ## Inputs
 
@@ -36,7 +36,7 @@ Publish a release, and the post appears on your blog a few seconds later.
 | `title` | release name, else `<repo> <tag>` | Post title. |
 | `slug-prefix` | repo name | The post's slug is `<prefix>-<tag>`, e.g. `my-cli-v1-4-0`. |
 | `include-prereleases` | `false` | Also post prereleases. |
-| `update-existing` | `true` | A re-run or an edited release updates the same post instead of making a duplicate. |
+| `update-existing` | `true` | When the release's post already exists (you edited the release, with `edited` in the trigger types), update its title and body instead of skipping. A re-run with unchanged notes returns the existing post and changes nothing. |
 | `api-base` | `https://slopit.io/api` | Change it only for a self-hosted SlopIt. |
 
 Output: `post-url`, the published post's URL.

@@ -24,7 +24,7 @@ inputs:
     description: Also post prereleases ("true"/"false").
     default: 'false'
   update-existing:
-    description: If a post for this release already exists (a re-run, or an edited release), update its title and body ("true"/"false").
+    description: If this release's post already exists (e.g. the release was edited and the workflow also triggers on `edited`), update its title and body ("true"/"false"). A re-run with unchanged notes returns the existing post.
     default: 'true'
   api-base:
     description: SlopIt API base. Change it only for a self-hosted SlopIt.
