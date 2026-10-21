@@ -2,7 +2,12 @@
 name: Release notes to SlopIt
 on:
   release:
-    types: [published, edited]
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Release tag to republish (after editing its notes)
+        required: true
 jobs:
   publish:
     runs-on: ubuntu-latest
@@ -12,4 +17,5 @@ jobs:
         uses: ./
         with:
           api-key: ${{ secrets.SLOPIT_API_KEY }}
+          tag: ${{ inputs.tag }}
       - run: echo "Post at ${{ steps.slopit.outputs.post-url }}"

@@ -14,7 +14,19 @@ API="${INPUT_API_BASE:-https://slopit.io/api}"
 API="${API%/}"
 
 ev="$GITHUB_EVENT_PATH"
-jq -e '.release' "$ev" >/dev/null || fail "This workflow wasn't triggered by a release event. Use: on: release: types: [published]"
+# Manual run (workflow_dispatch with a `tag` input): fetch that release from
+# the GitHub API and treat it like a release event. Use it to republish a
+# release after editing its notes.
+if ! jq -e '.release' "$ev" >/dev/null; then
+  tag_in="${INPUT_TAG:-$(jq -r '.inputs.tag // empty' "$ev")}"
+  [ -n "$tag_in" ] || fail "Not a release event and no tag given. Use on: release: types: [published], or run the workflow manually with a tag."
+  [ -n "${GH_TOKEN:-}" ] || fail "A manual run needs GH_TOKEN (pass github-token: \${{ github.token }})."
+  rel=$(curl -sS --fail-with-body -H "Authorization: Bearer ${GH_TOKEN}" -H "Accept: application/vnd.github+json" \
+    "${GITHUB_API_URL:-https://api.github.com}/repos/${GITHUB_REPOSITORY}/releases/tags/${tag_in}") || fail "Couldn't fetch release ${tag_in}: $rel"
+  ev=$(mktemp)
+  jq -n --argjson r "$rel" --arg name "${GITHUB_REPOSITORY#*/}" --arg full "$GITHUB_REPOSITORY" \
+    '{release: $r, repository: {name: $name, full_name: $full}}' > "$ev"
+fi
 
 draft=$(jq -r '.release.draft' "$ev")
 pre=$(jq -r '.release.prerelease' "$ev")
