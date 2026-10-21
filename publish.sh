@@ -21,8 +21,9 @@ if ! jq -e '.release' "$ev" >/dev/null; then
   tag_in="${INPUT_TAG:-$(jq -r '.inputs.tag // empty' "$ev")}"
   [ -n "$tag_in" ] || fail "Not a release event and no tag given. Use on: release: types: [published], or run the workflow manually with a tag."
   [ -n "${GH_TOKEN:-}" ] || fail "A manual run needs GH_TOKEN (pass github-token: \${{ github.token }})."
+  tag_enc=$(jq -rn --arg t "$tag_in" '$t|@uri')
   rel=$(curl -sS --fail-with-body -H "Authorization: Bearer ${GH_TOKEN}" -H "Accept: application/vnd.github+json" \
-    "${GITHUB_API_URL:-https://api.github.com}/repos/${GITHUB_REPOSITORY}/releases/tags/${tag_in}") || fail "Couldn't fetch release ${tag_in}: $rel"
+    "${GITHUB_API_URL:-https://api.github.com}/repos/${GITHUB_REPOSITORY}/releases/tags/${tag_enc}") || fail "Couldn't fetch release ${tag_in}: $rel"
   ev=$(mktemp)
   jq -n --argjson r "$rel" --arg name "${GITHUB_REPOSITORY#*/}" --arg full "$GITHUB_REPOSITORY" \
     '{release: $r, repository: {name: $name, full_name: $full}}' > "$ev"
