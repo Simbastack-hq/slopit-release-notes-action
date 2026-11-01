@@ -53,8 +53,9 @@ Output: `post-url`, the published post's URL.
 - It doesn't write anything. If you want a "what this release means" post, have your agent write it as a separate post.
 - It skips draft releases. Prereleases are skipped too unless you turn them on.
 
-## Live demo
+## Live examples
 
-This repo's own releases post to https://release-notes-demo.slopit.io.
+- SlopIt's own releases post to https://changelog.slopit.io (workflow: [Simbastack-hq/SlopIt](https://github.com/Simbastack-hq/SlopIt/blob/main/.github/workflows/release-notes.yml)).
+- This repo's releases post to https://release-notes-demo.slopit.io.
 
 MIT licensed. Made by [SimbaStack](https://www.simbastack.com), the team behind SlopIt.
