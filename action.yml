@@ -39,6 +39,9 @@ outputs:
   post-url:
     description: URL of the published post (empty for drafts and skipped releases).
     value: ${{ steps.publish.outputs.post-url }}
+  badge-markdown:
+    description: Markdown for a README badge that links to the blog and shows its newest post (hosted SlopIt only).
+    value: ${{ steps.publish.outputs.badge-markdown }}
 runs:
   using: composite
   steps:

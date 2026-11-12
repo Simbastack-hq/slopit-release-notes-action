@@ -58,6 +58,7 @@ auth=(-H "Authorization: Bearer ${SLOPIT_API_KEY}")
 me=$(curl -sS --fail-with-body "${auth[@]}" "$API/me") || fail "GET $API/me failed: $me"
 blog=$(printf '%s' "$me" | jq -r '.blog_id // .blog.id // empty')
 [ -n "$blog" ] || fail "Couldn't read the blog id from $API/me."
+live=$(printf '%s' "$me" | jq -r '.live_url // empty')
 
 tags_json=$(printf '%s' "${INPUT_TAGS:-release,changelog}" | jq -Rc 'split(",") | map(gsub("^\\s+|\\s+$";"")) | map(select(length>0))')
 payload=$(jq -nc --arg t "$title" --arg s "$slug" --arg b "$body" --arg st "${INPUT_STATUS:-published}" \
@@ -86,3 +87,21 @@ rm -f "$resp_file"
 post_url=$(printf '%s' "$resp" | jq -r '.post_url // .post.url // empty')
 if [ -n "$post_url" ]; then echo "Published: $post_url"; else echo "Saved (status: ${INPUT_STATUS:-published})."; fi
 out post-url "$post_url"
+
+# README badge, hosted SlopIt only: shows the blog's newest post and its age,
+# and links to the blog. Printed in the job summary so it's easy to copy.
+if [ "$API" = "https://slopit.io/api" ] && [ -n "$live" ]; then
+  badge="[![changelog on SlopIt](https://slopit.io/badge/${blog}.svg?label=changelog)](${live})"
+  out badge-markdown "$badge"
+  if [ -n "${GITHUB_STEP_SUMMARY:-}" ]; then
+    {
+      echo "### Changelog badge for your README"
+      echo
+      echo "$badge"
+      echo
+      echo '```markdown'
+      echo "$badge"
+      echo '```'
+    } >> "$GITHUB_STEP_SUMMARY"
+  fi
+fi
