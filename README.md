@@ -1,5 +1,7 @@
 # Publish release notes to SlopIt
 
+[![changelog on SlopIt](https://slopit.io/badge/2wftdzzg.svg?label=changelog)](https://release-notes-demo.slopit.io/)
+
 A GitHub Action that posts each release's notes to a [SlopIt](https://slopit.io) blog when the release is published. The notes go out exactly as you wrote them: no AI, no rewriting, no extra keys beyond the blog's own.
 
 Every release gets its own page with its own URL, title and date, plus an entry in the blog's RSS feed, sitemap, `llms.txt` and a markdown copy. That's the changelog SEO checklist, done for you.
@@ -46,7 +48,17 @@ Publish a release, and the post appears on your blog a few seconds later. Fixed 
 | `tag` | empty | For a manual run: the release tag to (re)publish. |
 | `api-base` | `https://slopit.io/api` | Change it only for a self-hosted SlopIt. |
 
-Output: `post-url`, the published post's URL.
+Outputs: `post-url`, the published post's URL, and `badge-markdown`, the README badge below.
+
+## README badge
+
+After each run, the job summary shows a badge for your README. It links to your changelog and shows the newest release and how long ago it went out, like the one at the top of this page:
+
+```markdown
+[![changelog on SlopIt](https://slopit.io/badge/{blog_id}.svg?label=changelog)](https://{your-blog}.slopit.io/)
+```
+
+Copy it from the summary (it has your blog's id and URL filled in) and paste it next to your other badges. Leave out `?label=changelog` and the badge says "blog".
 
 ## What it doesn't do
 
